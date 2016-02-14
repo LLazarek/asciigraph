@@ -1,0 +1,29 @@
+DEBUG turned on
+Pulling data from stdin...
+parsing line {1} into (0, 1)
+parsing line {2} into (1, 2)
+parsing line {3} into (2, 3)
+parsing line {4} into (3, 4)
+parsing line {5} into (4, 5)
+min: 1, max: 5
+ylimits: 1, 5
+labelling y = 5
+Handling pt: (5, 4)
+Printing point: (5, 4)
+finished line 5
+labelling y = 4
+Handling pt: (4, 3)
+Printing point: (4, 3)
+finished line 4
+labelling y = 3
+Handling pt: (3, 2)
+Printing point: (3, 2)
+finished line 3
+labelling y = 2
+Handling pt: (2, 1)
+Printing point: (2, 1)
+finished line 2
+labelling y = 1
+Handling pt: (1, 0)
+Printing point: (1, 0)
+finished line 1
