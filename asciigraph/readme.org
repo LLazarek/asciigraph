@@ -19,11 +19,11 @@ Please see [Data format] for a description of how to set these options.
 
 | Option            | Default value | Meaning                                                           |
 |-------------------+---------------+-------------------------------------------------------------------|
-| minx              | inferred      | The left-hand limit/boundary of the graph                         |
-| maxx              | inferred      | The right-hand limit/boundary of the graph                        |
+| xmin              | inferred      | The left-hand limit/boundary of the graph                         |
+| xmax              | inferred      | The right-hand limit/boundary of the graph                        |
 | xstep             | none          | Not yet used                                                      |
-| miny              | inferred      | The lower limit/boundary of the graph                             |
-| maxy              | inferred      | The upper limit/boundary of the graph                             |
+| ymin              | inferred      | The lower limit/boundary of the graph                             |
+| ymax              | inferred      | The upper limit/boundary of the graph                             |
 | ystep             | 1             | The resolution of the graph                                       |
 | X_LABEL_DENSITY   | 5             | The interval at which the x-axis is labelled.                     |
 |                   |               | ^ Warning: small values will cause formatting to become messed up |
@@ -117,7 +117,7 @@ graph
 
 #option value
 
-You can set as many options as you like, but all option settings must appear at the start of the file, before any data.
+You can set as many options as you like, but all option settings must appear at the start of the file, before any data. Any invalid, mispelled, or otherwise unrecognized options will be ignored, so take care that they are correctly written. If you set an option and it does not seem to affect the graph, check the syntax first. If it still seems correct, run in debug mode to see if any options are marked as invalid.
 The data should follow immediately after the option settings. For example, consider the following example where the same data as was used in the [Basic] example is graphed but the ystep option is set to 2:
 
 data

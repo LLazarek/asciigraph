@@ -119,11 +119,11 @@ void fileGraph(const std::string &path, const bool debug){
    invalid_data           Data invalid format or invalid limits
 */
 void streamGraph(std::istream &in, const bool debug){
-  int minx = -1, maxx = -1;
-  int miny = 0, maxy = 0;
+  int xmin = -1, xmax = -1;
+  int ymin = 0, ymax = 0;
   int xstep = 1, ystep = 1;
-  bool minx_set = false, maxx_set = false,
-       miny_set = false, maxy_set = false;
+  bool xmin_set = false, xmax_set = false,
+       ymin_set = false, ymax_set = false;
   char X_AXIS_CHAR       = X_AXIS_CHAR_DEFAULT,
        Y_AXIS_CHAR       = Y_AXIS_CHAR_DEFAULT,
        GUIDELINE_CHAR    = GUIDELINE_CHAR_DEFAULT,
@@ -146,40 +146,57 @@ void streamGraph(std::istream &in, const bool debug){
 	if(ystep <= 0) ystep = 1;
 	DEBUG std::cerr << "Set ystep to " << ystep << std::endl;
       }
-      else if(line.compare(1, 4, "miny") == 0){
-	miny = std::stoi(line.substr(6));
-	miny_set = true;
+      else if(line.compare(1, 4, "ymin") == 0){
+	ymin = std::stoi(line.substr(6));
+	ymin_set = true;
+	DEBUG std::cerr << "Set ymin to " << ymin << std::endl;
       }
-      else if(line.compare(1, 4, "maxy") == 0){
-	maxy = std::stoi(line.substr(6));
-	maxy_set = true;
+      else if(line.compare(1, 4, "ymax") == 0){
+	ymax = std::stoi(line.substr(6));
+	ymax_set = true;
+	DEBUG std::cerr << "Set ymax to " << ymax << std::endl;
       }
-      else if(line.compare(1, 4, "minx") == 0){
-	minx = std::stoi(line.substr(6));
-	minx_set = true;
+      else if(line.compare(1, 4, "xmin") == 0){
+	xmin = std::stoi(line.substr(6));
+	xmin_set = true;
+	DEBUG std::cerr << "Set xmin to " << xmin << std::endl;
       }
-      else if(line.compare(1, 4, "maxx") == 0){
-	maxx = std::stoi(line.substr(6));
-	maxx_set = true;
+      else if(line.compare(1, 4, "xmax") == 0){
+	xmax = std::stoi(line.substr(6));
+	xmax_set = true;
+	DEBUG std::cerr << "Set xmax to " << xmax << std::endl;
       }
       else if(line.compare(1, 11, "X_AXIS_CHAR") == 0){
 	X_AXIS_CHAR = line.substr(13, 1).c_str()[0];
+	DEBUG std::cerr << "Set X_AXIS_CHAR to " << X_AXIS_CHAR << std::endl;
       }
       else if(line.compare(1, 11, "Y_AXIS_CHAR") == 0){
 	Y_AXIS_CHAR = line.substr(13, 1).c_str()[0];
+	DEBUG std::cerr << "Set Y_AXIS_CHAR to " << Y_AXIS_CHAR << std::endl;
       }
       else if(line.compare(1, 14, "GUIDELINE_CHAR") == 0){
 	GUIDELINE_CHAR = line.substr(16, 1).c_str()[0];
+	DEBUG std::cerr << "Set GUIDELINE_CHAR to " << GUIDELINE_CHAR
+			<< std::endl;
       }
       else if(line.compare(1, 10, "POINT_CHAR") == 0){
 	POINT_CHAR = line.substr(12, 1).c_str()[0];
+	DEBUG std::cerr << "Set POINT_CHAR to " << POINT_CHAR << std::endl;
       }
       else if(line.compare(1, 15, "X_LABEL_DENSITY") == 0){
 	X_LABEL_DENSITY = std::stoi(line.substr(17));
+	DEBUG std::cerr << "Set X_LABEL_DENSITY to " << X_LABEL_DENSITY
+			<< std::endl;
       }
       else if(line.compare(1, 17, "GUIDELINE_DENSITY") == 0){
 	GUIDELINE_DENSITY = std::stoi(line.substr(19));
+	DEBUG std::cerr << "Set GUIDELINE_DENSITY to " << GUIDELINE_DENSITY
+			<< std::endl;
       }
+      else{
+	DEBUG std::cerr << "Skipping invalid option: \"" << line
+			<< "\"" << std::endl;
+      }	
       getline(in, line);
     }
   }catch(const std::invalid_argument &e){
@@ -210,22 +227,22 @@ void streamGraph(std::istream &in, const bool debug){
       DEBUG std::cerr << "into x=" << x << "\ty=" << y << std::endl;
       
       if(i == 0){
-	if(!minx_set) minx = x;
-	if(!maxx_set) maxx = x;
-	if(!miny_set) miny = y;
-	if(!maxy_set) maxy = y;
+	if(!xmin_set) xmin = x;
+	if(!xmax_set) xmax = x;
+	if(!ymin_set) ymin = y;
+	if(!ymax_set) ymax = y;
       }
-      if(!minx_set && x < minx) minx = x;
-      if(!maxx_set && x > maxx) maxx = x;
-      if(!miny_set && y < miny) miny = y;
-      if(!maxy_set && y > maxy) maxy = y;
+      if(!xmin_set && x < xmin) xmin = x;
+      if(!xmax_set && x > xmax) xmax = x;
+      if(!ymin_set && y < ymin) ymin = y;
+      if(!ymax_set && y > ymax) ymax = y;
       pts.push_back(std::pair<int, int>(x, y));
       DEBUG std::cerr << "getting next line..." << std::endl;
     }
     std::cout << "\n\n";
 
     try{
-      asciigraph ag(pts, minx, maxx, xstep, miny, maxy, ystep,
+      asciigraph ag(pts, xmin, xmax, xstep, ymin, ymax, ystep,
 		    debug,
 		    X_AXIS_CHAR, Y_AXIS_CHAR, GUIDELINE_CHAR, POINT_CHAR,
 		    X_LABEL_DENSITY, GUIDELINE_DENSITY);
@@ -248,22 +265,22 @@ void streamGraph(std::istream &in, const bool debug){
       }
       
       if(i == 0){
-	if(!miny_set) miny = y;
-	if(!maxy_set) maxy = y;
+	if(!ymin_set) ymin = y;
+	if(!ymax_set) ymax = y;
       }
-      if(!miny_set && y < miny) miny = y;
-      if(!maxy_set && y > maxy) maxy = y;
+      if(!ymin_set && y < ymin) ymin = y;
+      if(!ymax_set && y > ymax) ymax = y;
       DEBUG std::cerr << "parsing line {" << line << "}" << " into ("
 		      << i << ", " << y << ")" << std::endl;
       pts.push_back(std::pair<int, int>(i, y));
     }
-    DEBUG std::cerr << "min: " << miny << ", max: " << maxy << std::endl;
+    DEBUG std::cerr << "min: " << ymin << ", max: " << ymax << std::endl;
     std::cout << "\n\n";
 
     try{
-      if(!minx_set) minx = 0;
-      if(!maxx_set) maxx = i;
-      asciigraph ag(pts, minx, maxx, xstep, miny, maxy, ystep,
+      if(!xmin_set) xmin = 0;
+      if(!xmax_set) xmax = i;
+      asciigraph ag(pts, xmin, xmax, xstep, ymin, ymax, ystep,
 		    debug,
 		    X_AXIS_CHAR, Y_AXIS_CHAR, GUIDELINE_CHAR, POINT_CHAR,
 		    X_LABEL_DENSITY, GUIDELINE_DENSITY);
