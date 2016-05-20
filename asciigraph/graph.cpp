@@ -126,12 +126,14 @@ void streamGraph(std::istream &in, const bool debug){
   bool xmin_set = false, xmax_set = false,
        ymin_set = false, ymax_set = false,
        hmax_set = false;
-  char X_AXIS_CHAR       = X_AXIS_CHAR_DEFAULT,
-       Y_AXIS_CHAR       = Y_AXIS_CHAR_DEFAULT,
-       GUIDELINE_CHAR    = GUIDELINE_CHAR_DEFAULT,
-       POINT_CHAR        = POINT_CHAR_DEFAULT;
-  int  X_LABEL_DENSITY   = X_LABEL_DENSITY_DEFAULT,
-       GUIDELINE_DENSITY = GUIDELINE_DENSITY_DEFAULT;
+  char        X_AXIS_CHAR       = X_AXIS_CHAR_DEFAULT,
+              Y_AXIS_CHAR       = Y_AXIS_CHAR_DEFAULT,
+              GUIDELINE_CHAR    = GUIDELINE_CHAR_DEFAULT,
+              POINT_CHAR        = POINT_CHAR_DEFAULT;
+  int         X_LABEL_DENSITY   = X_LABEL_DENSITY_DEFAULT,
+              GUIDELINE_DENSITY = GUIDELINE_DENSITY_DEFAULT;
+  std::string X_AXIS_LABEL      = X_AXIS_LABEL_DEFAULT,
+              Y_AXIS_LABEL      = Y_AXIS_LABEL_DEFAULT;
 
 
 
@@ -200,6 +202,16 @@ void streamGraph(std::istream &in, const bool debug){
 	DEBUG std::cerr << "Set GUIDELINE_DENSITY to " << GUIDELINE_DENSITY
 			<< std::endl;
       }
+      else if(line.compare(1, 12, "X_AXIS_LABEL") == 0){
+	X_AXIS_LABEL = line.substr(14);
+	DEBUG std::cerr << "Set X_AXIS_LABEL to " << X_AXIS_LABEL
+			<< std::endl;
+      }
+      else if(line.compare(1, 12, "Y_AXIS_LABEL") == 0){
+	Y_AXIS_LABEL = line.substr(14);
+	DEBUG std::cerr << "Set Y_AXIS_LABEL to " << Y_AXIS_LABEL
+			<< std::endl;
+      }
       else{
 	DEBUG std::cerr << "Skipping invalid option: \"" << line
 			<< "\"" << std::endl;
@@ -262,7 +274,8 @@ void streamGraph(std::istream &in, const bool debug){
       asciigraph ag(pts, xmin, xmax, xstep, ymin, ymax, ystep,
 		    debug,
 		    X_AXIS_CHAR, Y_AXIS_CHAR, GUIDELINE_CHAR, POINT_CHAR,
-		    X_LABEL_DENSITY, GUIDELINE_DENSITY);
+		    X_LABEL_DENSITY, GUIDELINE_DENSITY, X_AXIS_LABEL,
+		    Y_AXIS_LABEL);
       ag(std::cout);
     }catch(const std::logic_error &e){
       throw invalid_data("invalid limit values");
@@ -310,7 +323,8 @@ void streamGraph(std::istream &in, const bool debug){
       asciigraph ag(pts, xmin, xmax, xstep, ymin, ymax, ystep,
 		    debug,
 		    X_AXIS_CHAR, Y_AXIS_CHAR, GUIDELINE_CHAR, POINT_CHAR,
-		    X_LABEL_DENSITY, GUIDELINE_DENSITY);
+		    X_LABEL_DENSITY, GUIDELINE_DENSITY, X_AXIS_LABEL,
+		    Y_AXIS_LABEL);
       ag(std::cout);
     }catch(const std::logic_error &e){
       throw invalid_data("invalid limit values");

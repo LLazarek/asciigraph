@@ -2,7 +2,7 @@
                               ==========
 
 Author: Lukas Lazarek
-Date: 2016-05-20 16:42:32 AWST
+Date: 2016-05-20 17:27:18 AWST
 
 
 Table of Contents
@@ -62,6 +62,8 @@ Please see [Data format] for a description of how to set these options.
   POINT_CHAR          @               The char used to display points                                                                                          
   Y_AXIS_CHAR         {pipe}          The char used to display the y-axis                                                                                      
   X_AXIS_CHAR         -               The char used to display the x-axis                                                                                      
+  Y_AXIS_LABEL        y-axis          The y-axis label; Note that the label does not need quotes.                                                              
+  X_AXIS_LABEL        x-axis          The x-axis label; Note that the label does not need quotes.                                                              
 
 3 Data format 
 ==============
@@ -86,6 +88,7 @@ data
 
 graph
 =====
+y-axis
 29   |^         ^     @
 28   |
 27   |
@@ -117,6 +120,7 @@ graph
 1    |  @
 0    |@ - - - - - - - - -
       0         5
+     x-axis
 
 3.2 Scatter 
 ------------
@@ -135,6 +139,7 @@ data
 
 graph
 =====
+y-axis
 9    |^         ^       @ ^         ^
 8    |
 7    |              @
@@ -146,6 +151,7 @@ graph
 1    |
 0    |@ - - - - - - - - - - - - @ - -
       0         5         10        15
+     x-axis
 
 3.3 Options 
 ------------
@@ -158,6 +164,7 @@ The data should follow immediately after the option settings. For example, consi
 
 data
 ====
+#Y_AXIS_LABEL foo bar
 #ystep 2
 0
 1
@@ -171,6 +178,7 @@ data
 
 graph
 =====
+foo bar
 30   |^         ^     @
 28   |
 26   |
@@ -188,6 +196,7 @@ graph
 2    |  @ @
 0    |@ - - - - - - - - -
       0         5
+     x-axis
 
 4 Rounding 
 ===========

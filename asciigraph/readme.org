@@ -34,6 +34,8 @@ Please see [Data format] for a description of how to set these options.
 | POINT_CHAR        | @             | The char used to display points                                                                                         |
 | Y_AXIS_CHAR       | {pipe}        | The char used to display the y-axis                                                                                     |
 | X_AXIS_CHAR       | -             | The char used to display the x-axis                                                                                     |
+| Y_AXIS_LABEL      | y-axis        | The y-axis label; Note that the label does not need quotes.                                                             |
+| X_AXIS_LABEL      | x-axis        | The x-axis label; Note that the label does not need quotes.                                                             |
 
 * Data format
 asciigraph can handle data provided in one of two formats, basic and scatter.
@@ -55,6 +57,7 @@ data
 
 graph
 =====
+y-axis
 29   |^         ^     @
 28   |
 27   |
@@ -86,6 +89,8 @@ graph
 1    |  @
 0    |@ - - - - - - - - -
       0         5
+     x-axis
+
 *** Scatter
 This format produces a scatter plot of the given list of points in the format "x, y". Consider the following example:
 
@@ -102,6 +107,7 @@ data
 
 graph
 =====
+y-axis
 9    |^         ^       @ ^         ^
 8    |
 7    |              @
@@ -113,6 +119,7 @@ graph
 1    |
 0    |@ - - - - - - - - - - - - @ - -
       0         5         10        15
+     x-axis
 
 *** Options
 [Options] can be set at the start of data entry. The format for setting an option is as follows:
@@ -124,6 +131,7 @@ The data should follow immediately after the option settings. For example, consi
 
 data
 ====
+#Y_AXIS_LABEL foo bar
 #ystep 2
 0
 1
@@ -137,6 +145,7 @@ data
 
 graph
 =====
+foo bar
 30   |^         ^     @
 28   |
 26   |
@@ -154,6 +163,7 @@ graph
 2    |  @ @
 0    |@ - - - - - - - - -
       0         5
+     x-axis
 
 * Rounding
 When setting the ystep option to values other than 1, you may notice some distortion in the graph produced. This is not a bug; it is the result of rounding. Due to the discrete & finite nature of an ascii image, points must fall clearly into a single row and column on the graph. Values falling between two rows/columns cannot be represented. The immediate consequence of this is that When ystep is defined to be greater than 1, it becomes necessary to round y-values to the nearest multiple of ystep so that they will fit into a single row on the graph. This is done in two ways:

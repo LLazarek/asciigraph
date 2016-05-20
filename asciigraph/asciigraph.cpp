@@ -13,7 +13,9 @@ asciigraph::asciigraph(const std::vector<std::pair<int, int>> Fx,
 		       const char _GUIDELINE_CHAR,
 		       const char _POINT_CHAR,
 		       const int  _X_LABEL_DENSITY,
-		       const int  _GUIDELINE_DENSITY)
+		       const int  _GUIDELINE_DENSITY,
+		       const std::string _X_AXIS_LABEL,
+		       const std::string _Y_AXIS_LABEL)
   : ymin(_ymin), ymax(_ymax), ystep(_ystep),
     xmin(_xmin), xmax(_xmax), xstep(_xstep),
     debug(_debug),
@@ -22,7 +24,9 @@ asciigraph::asciigraph(const std::vector<std::pair<int, int>> Fx,
     GUIDELINE_CHAR    (_GUIDELINE_CHAR),
     POINT_CHAR        (_POINT_CHAR), 
     X_LABEL_DENSITY   (_X_LABEL_DENSITY),
-    GUIDELINE_DENSITY (_GUIDELINE_DENSITY) {
+    GUIDELINE_DENSITY (_GUIDELINE_DENSITY),
+    X_AXIS_LABEL      (_X_AXIS_LABEL),
+    Y_AXIS_LABEL      (_Y_AXIS_LABEL){
   /* Error checking */
   if(ymin >= ymax || ystep < 1 ||
      xmin >= xmax || xstep < 1){
@@ -42,7 +46,11 @@ void asciigraph::operator()(std::ostream &out){
 
   //  bool marked_last_row = false;
   int marked_last_row = 0;
+
   /* Draw graph */
+  // Print y-axis label
+  out << Y_AXIS_LABEL << std::endl;
+  
   std::vector<std::pair<int, int>> used; // Keep track of points plotted
   auto it = graphpoints.begin();
   // For each y-value in range...
@@ -211,4 +219,5 @@ void asciigraph::label_x_axis(std::ostream &out){
       for(int i = 4; i < X_LABEL_DENSITY*2; ++i) out << ' ';
     }
   }
+  out << std::endl << "      " << X_AXIS_LABEL;
 }

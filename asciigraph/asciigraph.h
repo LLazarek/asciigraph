@@ -15,6 +15,8 @@
 #define POINT_CHAR_DEFAULT        '@'
 #define X_LABEL_DENSITY_DEFAULT   5
 #define GUIDELINE_DENSITY_DEFAULT 10
+#define X_AXIS_LABEL_DEFAULT      "x-axis"
+#define Y_AXIS_LABEL_DEFAULT      "y-axis"
 
 
 /* Class asciigraph:
@@ -77,12 +79,14 @@ n    =====================
 	     const int _xmin, const int _xmax, const int _xstep,
 	     const int _ymin, const int _ymax, const int _ystep,
 	     const bool _debug = false,
-	     const char _X_AXIS_CHAR     = X_AXIS_CHAR_DEFAULT,
-	     const char _Y_AXIS_CHAR     = Y_AXIS_CHAR_DEFAULT,
-	     const char _GUIDELINE_CHAR  = GUIDELINE_CHAR_DEFAULT,
-	     const char _POINT_CHAR      = POINT_CHAR_DEFAULT,
-	     const int  _X_LABEL_DENSITY = X_LABEL_DENSITY_DEFAULT,
-	     const int _GUIDELINE_DENSITY = GUIDELINE_DENSITY_DEFAULT);
+	     const char _X_AXIS_CHAR         = X_AXIS_CHAR_DEFAULT,
+	     const char _Y_AXIS_CHAR         = Y_AXIS_CHAR_DEFAULT,
+	     const char _GUIDELINE_CHAR      = GUIDELINE_CHAR_DEFAULT,
+	     const char _POINT_CHAR          = POINT_CHAR_DEFAULT,
+	     const int  _X_LABEL_DENSITY     = X_LABEL_DENSITY_DEFAULT,
+	     const int _GUIDELINE_DENSITY    = GUIDELINE_DENSITY_DEFAULT,
+	     const std::string _X_AXIS_LABEL = X_AXIS_LABEL_DEFAULT,
+	     const std::string _Y_AXIS_LABEL = Y_AXIS_LABEL_DEFAULT);
 
   
   /* addPoint():
@@ -150,6 +154,7 @@ private:
   std::vector<std::pair<int, int>> points;
   char X_AXIS_CHAR, Y_AXIS_CHAR, GUIDELINE_CHAR, POINT_CHAR;
   int X_LABEL_DENSITY, GUIDELINE_DENSITY;
+  std::string X_AXIS_LABEL, Y_AXIS_LABEL;
 };
 
 /* Model asciigraph:
@@ -166,7 +171,7 @@ private:
   | *  **
   |     
   |*
-  ------------------------------------------------
+  ------------------
 */
 
 /* struct descending_y_order:
