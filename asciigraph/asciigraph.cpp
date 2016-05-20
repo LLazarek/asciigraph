@@ -56,14 +56,13 @@ void asciigraph::operator()(std::ostream &out){
   // For each y-value in range...
   for(; y >= ymin_rnd && it != graphpoints.end(); y -= ystep){
     /* y-axis labelling */
-    out << y; // y-axis label
-    // Label padding
     DEBUG std::cerr << "labelling ";
+    // Label padding
     if(y >= 0)
-      for(int i =  (y == 0) ? 1 : y; i < 10000; i *= 10) out << " ";
+      for(int i =  (y == 0) ? 1 : y  ; i < 10000000  ; i *= 10) out << " ";
     else
-      for(int i = -y; i < 1000; i *= 10) out << " ";
-    
+      for(int i = -y; i < 1000000; i *= 10) out << " ";
+    out << y << " "; // y-axis label
     out << Y_AXIS_CHAR; // Y-axis line
 
     DEBUG std::cerr << "y = " << y << std::endl;
@@ -200,7 +199,13 @@ asciigraph::prepare_data(const std::vector< std::pair<int, int> > &pts,
 
 // Prints x-axis labels
 void asciigraph::label_x_axis(std::ostream &out){
-  out << "      ";
+  // Print bottom border
+  out << "          ";
+  for (int x = xmin; x <= xmax; ++x){
+    out << "- ";
+  }
+  // Print labels
+  out << "\n          ";
   for(int x = xmin; x <= xmax; x += X_LABEL_DENSITY){
     if(0 <= x && x <= 9){ // 1 char label
       out << x;
@@ -219,5 +224,5 @@ void asciigraph::label_x_axis(std::ostream &out){
       for(int i = 4; i < X_LABEL_DENSITY*2; ++i) out << ' ';
     }
   }
-  out << std::endl << "      " << X_AXIS_LABEL;
+  out << std::endl << "          " << X_AXIS_LABEL;
 }
