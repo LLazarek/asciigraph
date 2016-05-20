@@ -17,21 +17,23 @@ The meaning of the switches are...
 * Options
 Please see [Data format] for a description of how to set these options.
 
-| Option            | Default value | Meaning                                                           |
-|-------------------+---------------+-------------------------------------------------------------------|
-| xmin              | inferred      | The left-hand limit/boundary of the graph                         |
-| xmax              | inferred      | The right-hand limit/boundary of the graph                        |
-| xstep             | none          | Not yet used                                                      |
-| ymin              | inferred      | The lower limit/boundary of the graph                             |
-| ymax              | inferred      | The upper limit/boundary of the graph                             |
-| ystep             | 1             | The resolution of the graph                                       |
-| X_LABEL_DENSITY   | 5             | The interval at which the x-axis is labelled.                     |
-|                   |               | ^ Warning: small values will cause formatting to become messed up |
-| GUIDELINE_DENSITY | 10            | The interval at which guidelines are displayed                    |
-| GUIDELINE_CHAR    | ^             | The char used to display guidelines                               |
-| POINT_CHAR        | @             | The char used to display points                                   |
-| Y_AXIS_CHAR       | {pipe}         | The char used to display the y-axis                               |
-| X_AXIS_CHAR       | -             | The char used to display the x-axis                               |
+| Option            | Default value | Meaning                                                                                                                 |
+|-------------------+---------------+-------------------------------------------------------------------------------------------------------------------------|
+| xmin              | inferred      | The left-hand limit/boundary of the graph                                                                               |
+| xmax              | inferred      | The right-hand limit/boundary of the graph                                                                              |
+| xstep             | none          | Not yet used                                                                                                            |
+| ymin              | inferred      | The lower limit/boundary of the graph                                                                                   |
+| ymax              | inferred      | The upper limit/boundary of the graph                                                                                   |
+| ystep             | 1             | The resolution of the graph                                                                                             |
+| hmax              | none          | The maximum height (in lines) of the graph; all graphs will be guaranteed to be less than or equal to this size         |
+|                   |               | ^ Warning: this option does not guarantee a standard size. Graph size is guaranteed to be within: hmax/2 < size <= hmax |
+| X_LABEL_DENSITY   | 5             | The interval at which the x-axis is labelled.                                                                           |
+|                   |               | ^ Warning: small values will cause formatting to become messed up                                                       |
+| GUIDELINE_DENSITY | 10            | The interval at which guidelines are displayed                                                                          |
+| GUIDELINE_CHAR    | ^             | The char used to display guidelines                                                                                     |
+| POINT_CHAR        | @             | The char used to display points                                                                                         |
+| Y_AXIS_CHAR       | {pipe}        | The char used to display the y-axis                                                                                     |
+| X_AXIS_CHAR       | -             | The char used to display the x-axis                                                                                     |
 
 * Data format
 asciigraph can handle data provided in one of two formats, basic and scatter.
@@ -169,4 +171,9 @@ asciigraph was written by Lukas Lazarek <lukasalazarek@gmail.com>
 * Coming features
 *** DONE Make exception throwing/handling better
 *** DONE Make other settings changeable in data file
-*** TODO Move code to git, update ~/batlog.sh
+*** DONE Move code to git, update ~/batlog.sh
+*** DONE hmax option
+*** TODO x-axis scale specification
+*** TODO x-axis labelling of specific points and whole axis
+*** TODO y-axis labelling
+*** TODO bar graphs

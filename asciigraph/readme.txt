@@ -2,7 +2,7 @@
                               ==========
 
 Author: Lukas Lazarek
-Date: 2016-02-14 18:14:19 EST
+Date: 2016-05-20 16:42:32 AWST
 
 
 Table of Contents
@@ -19,6 +19,11 @@ Table of Contents
     6.1 Make exception throwing/handling better
     6.2 Make other settings changeable in data file
     6.3 Move code to git, update ~/batlog.sh
+    6.4 hmax option
+    6.5 x-axis scale specification
+    6.6 x-axis labelling of specific points and whole axis
+    6.7 y-axis labelling
+    6.8 bar graphs
 
 
 1 Summary/help 
@@ -40,21 +45,23 @@ The meaning of the switches are...
 ==========
 Please see [Data format] for a description of how to set these options.
 
-  Option              Default value   Meaning                                                            
- -------------------+---------------+-------------------------------------------------------------------
-  minx                inferred        The left-hand limit/boundary of the graph                          
-  maxx                inferred        The right-hand limit/boundary of the graph                         
-  xstep               none            Not yet used                                                       
-  miny                inferred        The lower limit/boundary of the graph                              
-  maxy                inferred        The upper limit/boundary of the graph                              
-  ystep               1               The resolution of the graph                                        
-  X_LABEL_DENSITY     5               The interval at which the x-axis is labelled.                      
-                                      ^ Warning: small values will cause formatting to become messed up  
-  GUIDELINE_DENSITY   10              The interval at which guidelines are displayed                     
-  GUIDELINE_CHAR      ^               The char used to display guidelines                                
-  POINT_CHAR          @               The char used to display points                                    
-  Y_AXIS_CHAR         {pipe}          The char used to display the y-axis                                
-  X_AXIS_CHAR         -               The char used to display the x-axis                                
+  Option              Default value   Meaning                                                                                                                  
+ -------------------+---------------+-------------------------------------------------------------------------------------------------------------------------
+  xmin                inferred        The left-hand limit/boundary of the graph                                                                                
+  xmax                inferred        The right-hand limit/boundary of the graph                                                                               
+  xstep               none            Not yet used                                                                                                             
+  ymin                inferred        The lower limit/boundary of the graph                                                                                    
+  ymax                inferred        The upper limit/boundary of the graph                                                                                    
+  ystep               1               The resolution of the graph                                                                                              
+  hmax                none            The maximum height (in lines) of the graph; all graphs will be guaranteed to be less than or equal to this size          
+                                      ^ Warning: this option does not guarantee a standard size. Graph size is guaranteed to be within: hmax/2 < size <= hmax  
+  X_LABEL_DENSITY     5               The interval at which the x-axis is labelled.                                                                            
+                                      ^ Warning: small values will cause formatting to become messed up                                                        
+  GUIDELINE_DENSITY   10              The interval at which guidelines are displayed                                                                           
+  GUIDELINE_CHAR      ^               The char used to display guidelines                                                                                      
+  POINT_CHAR          @               The char used to display points                                                                                          
+  Y_AXIS_CHAR         {pipe}          The char used to display the y-axis                                                                                      
+  X_AXIS_CHAR         -               The char used to display the x-axis                                                                                      
 
 3 Data format 
 ==============
@@ -146,7 +153,7 @@ graph
 
 #option value
 
-You can set as many options as you like, but all option settings must appear at the start of the file, before any data.
+You can set as many options as you like, but all option settings must appear at the start of the file, before any data. Any invalid, mispelled, or otherwise unrecognized options will be ignored, so take care that they are correctly written. If you set an option and it does not seem to affect the graph, check the syntax first. If it still seems correct, run in debug mode to see if any options are marked as invalid.
 The data should follow immediately after the option settings. For example, consider the following example where the same data as was used in the [Basic] example is graphed but the ystep option is set to 2:
 
 data
@@ -200,11 +207,26 @@ asciigraph was written by Lukas Lazarek <lukasalazarek@gmail.com>
 6 Coming features 
 ==================
 
-6.1 TODO Make exception throwing/handling better 
+6.1 DONE Make exception throwing/handling better 
 -------------------------------------------------
 
-6.2 TODO Make other settings changeable in data file 
+6.2 DONE Make other settings changeable in data file 
 -----------------------------------------------------
 
-6.3 TODO Move code to git, update ~/batlog.sh 
+6.3 DONE Move code to git, update ~/batlog.sh 
 ----------------------------------------------
+
+6.4 DONE hmax option 
+---------------------
+
+6.5 TODO x-axis scale specification 
+------------------------------------
+
+6.6 TODO x-axis labelling of specific points and whole axis 
+------------------------------------------------------------
+
+6.7 TODO y-axis labelling 
+--------------------------
+
+6.8 TODO bar graphs 
+--------------------

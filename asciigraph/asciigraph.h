@@ -54,7 +54,7 @@ public:
 n    =====================
 
      @throws
-     std::logic_error     Given limits invalid
+     std::logic_error                         Given limits invalid
 
      @params
      std::vector<std::pair<int, int>> Fx      The points to be graphed

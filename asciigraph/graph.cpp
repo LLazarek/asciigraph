@@ -119,11 +119,13 @@ void fileGraph(const std::string &path, const bool debug){
    invalid_data           Data invalid format or invalid limits
 */
 void streamGraph(std::istream &in, const bool debug){
-  int xmin = -1, xmax = -1;
-  int ymin = 0, ymax = 0;
-  int xstep = 1, ystep = 1;
+  int xmin  = -1, xmax  = -1;
+  int ymin  = 0,  ymax  = 0;
+  int xstep = 1,  ystep = 1;
+  int hmax  = 0;
   bool xmin_set = false, xmax_set = false,
-       ymin_set = false, ymax_set = false;
+       ymin_set = false, ymax_set = false,
+       hmax_set = false;
   char X_AXIS_CHAR       = X_AXIS_CHAR_DEFAULT,
        Y_AXIS_CHAR       = Y_AXIS_CHAR_DEFAULT,
        GUIDELINE_CHAR    = GUIDELINE_CHAR_DEFAULT,
@@ -165,6 +167,11 @@ void streamGraph(std::istream &in, const bool debug){
 	xmax = std::stoi(line.substr(6));
 	xmax_set = true;
 	DEBUG std::cerr << "Set xmax to " << xmax << std::endl;
+      }
+      else if(line.compare(1, 4, "hmax") == 0){
+	hmax = std::stoi(line.substr(6));
+	hmax_set = true;
+	DEBUG std::cerr << "Set hmax to " << hmax << std::endl;
       }
       else if(line.compare(1, 11, "X_AXIS_CHAR") == 0){
 	X_AXIS_CHAR = line.substr(13, 1).c_str()[0];
@@ -239,6 +246,16 @@ void streamGraph(std::istream &in, const bool debug){
       pts.push_back(std::pair<int, int>(x, y));
       DEBUG std::cerr << "getting next line..." << std::endl;
     }
+
+    // Ensure graph height <= hmax
+    if(hmax_set){
+      int graphSize = (ymax - ymin)/ystep;
+      while (graphSize > hmax){
+	++ystep;
+	graphSize = (ymax - ymin)/ystep;
+      }
+    }
+    
     std::cout << "\n\n";
 
     try{
@@ -275,6 +292,16 @@ void streamGraph(std::istream &in, const bool debug){
       pts.push_back(std::pair<int, int>(i, y));
     }
     DEBUG std::cerr << "min: " << ymin << ", max: " << ymax << std::endl;
+
+    // Ensure graph height <= hmax
+    if(hmax_set){
+      int graphSize = (ymax - ymin)/ystep;
+      while (graphSize > hmax){
+	++ystep;
+	graphSize = (ymax - ymin)/ystep;
+      }
+    }
+    
     std::cout << "\n\n";
 
     try{
