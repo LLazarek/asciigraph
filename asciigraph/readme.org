@@ -1,7 +1,7 @@
 asciigraph
 
 * Summary/help
-asciigraph is a utility to 
+asciigraph is a utility to
 asciigraph is a utility to produce simple graphs of arbitrary data in ascii. The format for running asciigraph is as follows:
 
                     tasciigraph [-d] <-h | -s | -f </absolute/path/to/file> >
@@ -17,34 +17,38 @@ The meaning of the switches are...
 * Options
 Please see [Data format] for a description of how to set these options.
 
-| Option            | Default value | Meaning                                                                                                                 |
-|-------------------+---------------+-------------------------------------------------------------------------------------------------------------------------|
-| xmin              | inferred      | The left-hand limit/boundary of the graph                                                                               |
-| xmax              | inferred      | The right-hand limit/boundary of the graph                                                                              |
-| xstep             | none          | Not yet used                                                                                                            |
-| ymin              | inferred      | The lower limit/boundary of the graph                                                                                   |
-| ymax              | inferred      | The upper limit/boundary of the graph                                                                                   |
-| ystep             | 1             | The resolution of the graph                                                                                             |
-| hmax              | none          | The maximum height (in lines) of the graph; all graphs will be guaranteed to be less than or equal to this size         |
-|                   |               | ^ Warning: this option does not guarantee a standard size. Graph size is guaranteed to be within: hmax/2 < size <= hmax |
-| X_LABEL_DENSITY   | 5             | The interval at which the x-axis is labelled.                                                                           |
-|                   |               | ^ Warning: small values will cause formatting to become messed up                                                       |
-| GUIDELINE_DENSITY | 10            | The interval at which guidelines are displayed                                                                          |
-| GUIDELINE_CHAR    | ^             | The char used to display guidelines                                                                                     |
-| POINT_CHAR        | @             | The char used to display points                                                                                         |
-| Y_AXIS_CHAR       | {pipe}        | The char used to display the y-axis                                                                                     |
-| X_AXIS_CHAR       | -             | The char used to display the x-axis                                                                                     |
-| Y_AXIS_LABEL      | y-axis        | The y-axis label; Note that the label does not need quotes.                                                             |
-| X_AXIS_LABEL      | x-axis        | The x-axis label; Note that the label does not need quotes.                                                             |
+| Option            | Default value | Meaning                                                                                                                     |
+|-------------------+---------------+-----------------------------------------------------------------------------------------------------------------------------|
+| xmin              | inferred      | The left-hand limit/boundary of the graph                                                                                   |
+| xmax              | inferred      | The right-hand limit/boundary of the graph                                                                                  |
+| xstep             | none          | Not yet used                                                                                                                |
+| ymin              | inferred      | The lower limit/boundary of the graph                                                                                       |
+| ymax              | inferred      | The upper limit/boundary of the graph                                                                                       |
+| ystep             | 1             | The resolution of the graph                                                                                                 |
+| hmax              | none          | The maximum height (in lines) of the graph; all graphs will be guaranteed to be less than or equal to this size             |
+|                   |               | ^ Warning: this option does not guarantee a standard size. Graph size is guaranteed to be: hmax/2 < size <= hmax      |
+|                   |               | ^ Also note that if ystep and hmax are both set, ystep will be overridden if the chosen ystep will make the graph too large |
+|                   |               | but ystep is guaranteed to be at least as large as its set value                                                            |
+| X_LABEL_DENSITY   | 5             | The interval at which the x-axis is labelled.                                                                               |
+|                   |               | ^ Warning: small values will cause formatting to become messed up                                                           |
+| GUIDELINE_DENSITY | 10            | The interval at which guidelines are displayed                                                                              |
+| GUIDELINE_CHAR    | ^             | The char used to display guidelines                                                                                         |
+| POINT_CHAR        | @             | The char used to display points                                                                                             |
+| Y_AXIS_CHAR       | {pipe}        | The char used to display the y-axis                                                                                         |
+| X_AXIS_CHAR       | -             | The char used to display the x-axis                                                                                         |
+| Y_AXIS_LABEL      | y-axis        | The y-axis label; Note that the label does not need quotes.                                                                 |
+| X_AXIS_LABEL      | x-axis        | The x-axis label; Note that the label does not need quotes.                                                                 |
 
 * Data format
 asciigraph can handle data provided in one of two formats, basic and scatter.
 It follows these formats strictly, ceasing to read data upon either end of file (EOF) or a blank line.
+Comments may be placed anywhere in the data by starting a line with ';'. Lines beginning with ';' will be ignored by asciigraph.
 *** Basic
 This format produces a basic graph of a given set of numbers. The input format is a list of single numbers, one per line. These numbers are treated as y-values and are plotted against their position in the list. Consider the following example:
 
 data
 ====
+; Example data of basic graphing mode
 0
 1
 2
@@ -96,6 +100,8 @@ This format produces a scatter plot of the given list of points in the format "x
 
 data
 ====
+; Example data of scatter graphing mode
+; x, y
 0, 0
 4, 5
 2, 2
@@ -131,8 +137,13 @@ The data should follow immediately after the option settings. For example, consi
 
 data
 ====
+; Example data setting some options
+; Set the y axis label to "foo bar"
 #Y_AXIS_LABEL foo bar
+; Set the granularity of the y-axis to 2
 #ystep 2
+; Begin the data: note no space separating options and data
+; also note that no options may be set after the data has started
 0
 1
 2
@@ -185,5 +196,66 @@ asciigraph was written by Lukas Lazarek <lukasalazarek@gmail.com>
 *** DONE hmax option
 *** TODO x-axis scale specification
 *** TODO x-axis labelling of specific points and whole axis
-*** TODO y-axis labelling
+*** DONE y-axis labelling
+*** DONE Allow comments in data: lines starting with ";"
 *** TODO bar graphs
+>>> Use a string replace function to replace occurrences of "\n" with a newline in X_AXIS_LABEL
+
+#+BEGIN_SRC c++
+  bool replace(std::string& str, const std::string& from, const std::string& to) {
+    size_t start_position = str.find(from);
+    if(start_position == std::string::npos)
+      return false;
+    str.replace(start_position, from.length(), to);
+    return true;
+  }
+
+  std::string string("hello $name");
+  replace(string, "$name", "Somename");
+#+END_SRC
+
+thus, to make a bar graph, one would just set X_LABEL_DENSITY to 1, and then use the X_AXIS_LABEL to write a legend along the lines of:
+1 = expenses
+2 = expenses:food
+3 = expenses:disc
+4 = expenses:misc
+...
+
+Alternatively, I could implement a bar graph option which takes data in the format:
+"""
+; [number] [description]
+22 expenses:disc
+15 expenses:food
+5 expenses:misc
+42 total expenses
+"""
+So it would just need to extract the number, then get the rest of the line as the label
+And then does exactly what I was saying above.
+
+> What if I keep a vector which just contains true/false for if the height of each x-point has been reached yet, and this is decided if an '@' is printed at that column for each row
+ie: if we have a graph like so:
+. |
+. |
+. |      @
+. |      @
+. |      @
+.9|      @
+.8|  @   @ @
+.7|  @   @ @
+.6|  @ @ @ @
+.5|  @ @ @ @
+.4|@ @ @ @ @
+.3|@ @ @ @ @
+.2|@ @ @ @ @ @
+.1|@ @ @ @ @ @ @
+. ---------------------------
+.  1 2 3 4 5 6 7
+
+And we're currently printing row 7, then our vector looks like ([X] = t, [ ] = f)
+    [ ][x][ ][x][x][ ][ ]
+vec[ 0  1  2  3  4  5  6 ]
+
+And then we get to row 6, we get the next point and if it starts on that row, we set vec[point.second()] = true
+so the vector would become
+    [ ][x][x][x][x][ ][ ]
+vec[ 0  1  2  3  4  5  6 ]

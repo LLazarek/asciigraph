@@ -59,7 +59,7 @@ void asciigraph::operator()(std::ostream &out){
     DEBUG std::cerr << "labelling ";
     // Label padding
     if(y >= 0)
-      for(int i =  (y == 0) ? 1 : y  ; i < 10000000  ; i *= 10) out << " ";
+      for(int i = ((y == 0) ? 1 : y)  ; i < 10000000  ; i *= 10) out << " ";
     else
       for(int i = -y; i < 1000000; i *= 10) out << " ";
     out << y << " "; // y-axis label
@@ -118,15 +118,20 @@ void asciigraph::operator()(std::ostream &out){
   
   /* Fill out any remaining rows of graph, even though no points fall on them */
   for(; y >= ymin_rnd; y -= ystep){
-    out << y; // y-axis label
+    /* y-axis labelling */
+    DEBUG std::cerr << "labelling ";
     // Label padding
-    DEBUG std::cerr << "labelling... ";
     if(y >= 0)
-      for(int i =  (y == 0) ? 1 : y; i < 10000; i *= 10) out << " ";
+      for(int i = ((y == 0) ? 1 : y)  ; i < 10000000  ; i *= 10) out << " ";
     else
-      for(int i = -y; i < 1000; i *= 10) out << " ";
-    
+      for(int i = -y; i < 1000000; i *= 10) out << " ";
+    out << y << " "; // y-axis label
     out << Y_AXIS_CHAR; // Y-axis line
+
+    DEBUG std::cerr << "y = " << y << std::endl;
+    /* Done labelling */
+
+    
     for(int xpos = xmin; xpos <= xmax; ++xpos){
       if(xpos%X_LABEL_DENSITY == 0 && !marked_last_row){
 	out << GUIDELINE_CHAR << " "; // print x guideline
@@ -202,7 +207,7 @@ void asciigraph::label_x_axis(std::ostream &out){
   // Print bottom border
   out << "          ";
   for (int x = xmin; x <= xmax; ++x){
-    out << "- ";
+    out << "--";
   }
   // Print labels
   out << "\n          ";

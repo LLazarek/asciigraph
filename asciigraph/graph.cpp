@@ -123,8 +123,8 @@ void streamGraph(std::istream &in, const bool debug){
   int ymin  = 0,  ymax  = 0;
   int xstep = 1,  ystep = 1;
   int hmax  = 0;
-  bool xmin_set = false, xmax_set = false,
-       ymin_set = false, ymax_set = false,
+  bool xmin_set = false,  xmax_set = false,
+       ymin_set = false,  ymax_set = false,
        hmax_set = false;
   char        X_AXIS_CHAR       = X_AXIS_CHAR_DEFAULT,
               Y_AXIS_CHAR       = Y_AXIS_CHAR_DEFAULT,
@@ -144,8 +144,13 @@ void streamGraph(std::istream &in, const bool debug){
 
   /* Handle graph options if any */
   try{
-    while(line != "" && file_continues && line.c_str()[0] == '#'){
-      if(line.compare(1, 5, "ystep") == 0){
+    while(line != ""      &&
+	  file_continues  &&
+	  (line.c_str()[0] == '#' || line.c_str()[0] == ';')){
+      if(line.c_str()[0] == ';'){
+	DEBUG std::cerr << "skipping comment..." << std::endl;
+      }
+      else if(line.compare(1, 5, "ystep") == 0){
 	ystep = std::stoi(line.substr(7));
 	if(ystep <= 0) ystep = 1;
 	DEBUG std::cerr << "Set ystep to " << ystep << std::endl;
@@ -233,6 +238,11 @@ void streamGraph(std::istream &in, const bool debug){
     // Interpret "val1, val2" as point: (x, y)
     for(int i = 0; line != "" && file_continues;
 	++i, file_continues = getline(in, line)){
+      // Check if comment
+      if (line.c_str()[0] == ';'){
+	DEBUG std::cerr << "skipping comment..." << std::endl;
+	continue;
+      }
       // Parse line
       pos = line.find(",");
       DEBUG std::cerr << "parsing line {" << line << "}" << std::endl;
@@ -261,11 +271,8 @@ void streamGraph(std::istream &in, const bool debug){
 
     // Ensure graph height <= hmax
     if(hmax_set){
-      int graphSize = (ymax - ymin)/ystep;
-      while (graphSize > hmax){
-	++ystep;
-	graphSize = (ymax - ymin)/ystep;
-      }
+      int minstep_fit = (ymax - ymin)/hmax + 1;
+      if(ystep < minstep_fit) ystep = minstep_fit;
     }
     
     std::cout << "\n\n";
@@ -286,6 +293,11 @@ void streamGraph(std::istream &in, const bool debug){
     int i = 0;
     for(; line != "" && file_continues;
 	++i, file_continues = getline(in, line)){
+      // Check if comment
+      if (line.c_str()[0] == ';'){
+	DEBUG std::cerr << "skipping comment..." << std::endl;
+	continue;
+      }
       // Parse line
       int y;
       try{
@@ -308,11 +320,8 @@ void streamGraph(std::istream &in, const bool debug){
 
     // Ensure graph height <= hmax
     if(hmax_set){
-      int graphSize = (ymax - ymin)/ystep;
-      while (graphSize > hmax){
-	++ystep;
-	graphSize = (ymax - ymin)/ystep;
-      }
+      int minstep_fit = (ymax - ymin)/hmax + 1;
+      if(ystep < minstep_fit) ystep = minstep_fit;
     }
     
     std::cout << "\n\n";
