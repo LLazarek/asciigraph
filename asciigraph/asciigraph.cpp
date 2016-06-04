@@ -7,15 +7,17 @@
 asciigraph::asciigraph(const std::vector<std::pair<int, int>> Fx,
 		       const int _xmin, const int _xmax, const int _xstep,
 		       const int _ymin, const int _ymax, const int _ystep,
-		       const bool _debug,
-		       const char _X_AXIS_CHAR,
-		       const char _Y_AXIS_CHAR,
-		       const char _GUIDELINE_CHAR,
-		       const char _POINT_CHAR,
-		       const int  _X_LABEL_DENSITY,
-		       const int  _GUIDELINE_DENSITY,
-		       const std::string _X_AXIS_LABEL,
-		       const std::string _Y_AXIS_LABEL)
+		       const bool _debug,               // = false
+		       const char _X_AXIS_CHAR,         // = ..._DEFAULT
+		       const char _Y_AXIS_CHAR,         // = ..._DEFAULT
+		       const char _GUIDELINE_CHAR,      // = ..._DEFAULT
+		       const char _POINT_CHAR,          // = ..._DEFAULT
+		       const int  _X_LABEL_DENSITY,     // = ..._DEFAULT
+		       const int  _GUIDELINE_DENSITY,   // = ..._DEFAULT
+		       const std::string _X_AXIS_LABEL, // = ..._DEFAULT
+		       const std::string _Y_AXIS_LABEL, // = ..._DEFAULT
+		       const bool _BAR_ZERO_POINT       // = ..._DEFAULT
+		       )
   : ymin(_ymin), ymax(_ymax), ystep(_ystep),
     xmin(_xmin), xmax(_xmax), xstep(_xstep),
     debug(_debug),
@@ -26,7 +28,8 @@ asciigraph::asciigraph(const std::vector<std::pair<int, int>> Fx,
     X_LABEL_DENSITY   (_X_LABEL_DENSITY),
     GUIDELINE_DENSITY (_GUIDELINE_DENSITY),
     X_AXIS_LABEL      (_X_AXIS_LABEL),
-    Y_AXIS_LABEL      (_Y_AXIS_LABEL){
+    Y_AXIS_LABEL      (_Y_AXIS_LABEL),
+    BAR_ZERO_POINT    (_BAR_ZERO_POINT){
   /* Error checking */
   if(ymin >= ymax || ystep < 1 ||
      xmin >= xmax || xstep < 1){
@@ -40,21 +43,70 @@ asciigraph::asciigraph(const std::vector<std::pair<int, int>> Fx,
 }
 
 
-void asciigraph::operator()(std::ostream &out){
+void asciigraph::operator()(std::ostream &out,
+			    const bool bar_graph /* = false */){
   int y, ymin_rnd;
   auto graphpoints = prepare_data(points, &y, &ymin_rnd);
 
-  //  bool marked_last_row = false;
   int marked_last_row = 0;
 
-  /* Draw graph */
+  /*******************************/
+  /***** Set up bar tracking *****/
+  /*******************************/
+  /* print_bar contains values indicating if a bar should be printed
+     for each x-value at the current y-value. It is updated with the handling
+     of each y value.
+     0 = don't print a bar for this x-value on this y-value's row
+     1 = print a bar for this x-value on this row above the x-axis
+     2 = print a bar for this x-value on this row below the x-axis
+
+     Since graphs are printed by starting at ymax and working down to ymin
+     this system works well for positive y-values. print_bar begins with
+     all 0s and when a point is printed, its corresponding print_bar
+     value is set to 1: then every pass/row after that will print a bar
+     underneath that point.
+     For negative values, however, it must work in the opposite manner.
+     The default must be to print the bar, until the point is reached, at which
+     point the bar must stop.
+  */
+  std::vector< int > print_bar(xmax, 0); // fill print_bar with 0s
+  // Initialize any negative values print_bar values
+  /* Iterate backwards (since graphpoints in descending order) to set all
+     negative points in print_bar */
+  for (auto it2 = graphpoints.rbegin();
+       it2 != graphpoints.rend()   &&   it2 -> first < 0;
+       ++it2){
+    print_bar[it2 -> second] = 2;
+  }
+
+  /*********************************/
+  /***** Prepare to draw graph *****/
+  /*********************************/
   // Print y-axis label
   out << Y_AXIS_LABEL << std::endl;
   
   std::vector<std::pair<int, int>> used; // Keep track of points plotted
+
   auto it = graphpoints.begin();
-  // For each y-value in range...
+  // Deal with any points above ymax (only occurs if user sets ymax)
+  while(it -> first > y){ // For all points above graph
+    if(bar_graph){
+      // Set print_bar for this x value
+      print_bar[it -> second] = (y > 0  ?  1 : 0);
+    }
+    // else: just skip the point
+    it++;
+  }
+
+  /**********************/
+  /***** Draw graph *****/
+  /**********************/
+  
+  /* Plot points */
+  // For each y-value from ymax_rnd to ymin_rnd
+  // so long as there are points left to plot
   for(; y >= ymin_rnd && it != graphpoints.end(); y -= ystep){
+
     /* y-axis labelling */
     DEBUG std::cerr << "labelling ";
     // Label padding
@@ -67,12 +119,9 @@ void asciigraph::operator()(std::ostream &out){
 
     DEBUG std::cerr << "y = " << y << std::endl;
     /* Done labelling */
-
-
-    /* Plot points */
+    
+    /* Plot points for this y value / row */
     int xpos = xmin;
-    while(it -> first > y) it++; // Skip points out of graph range
-    // Plot points for this y value
     for(; it -> first == y && it != graphpoints.end(); ++it){
       DEBUG std::cerr << "Handling pt: (" << it -> first << ", "
 		      << it -> second << ")\n";
@@ -80,8 +129,15 @@ void asciigraph::operator()(std::ostream &out){
       while(xpos < it -> second){
 	if(y == 0) out << X_AXIS_CHAR << " "; // if at y = 0, draw x-axis
 	else{
-	  if(xpos%X_LABEL_DENSITY == 0 && !marked_last_row){
-	    out<< GUIDELINE_CHAR << " "; // print x guideline
+	  if(bar_graph  &&  print_bar[xpos] != 0){ // this xpos has bar ON
+	    if( (y >= 0 && print_bar[xpos] == 1) ||
+	        (y <  0 && print_bar[xpos] == 2)   ){
+	      out << POINT_CHAR << " "; // print bar
+	    }
+	    else out << "  ";
+	  }
+	  else if(xpos%X_LABEL_DENSITY == 0 && !marked_last_row){
+	    out << GUIDELINE_CHAR << " "; // print x guideline
 	  }
 	  else out << "  ";
 	}
@@ -92,31 +148,46 @@ void asciigraph::operator()(std::ostream &out){
       if(std::find(used.begin(), used.end(), *it) == used.end()){
 	DEBUG std::cerr << "Printing point: (" << y << ", "
 			<< xpos << ")\n";
-	out << POINT_CHAR << " ";// Haven't already printed this point
+	
+	if(!BAR_ZERO_POINT  &&  (bar_graph && y == 0)){ 
+	  out << X_AXIS_CHAR << " "; // don't print point on axis for bar graphs
+	}
+	else{
+	  out << POINT_CHAR << " "; // print point
+	}
+	if(bar_graph){
+	  print_bar[xpos] = (y >= 0  ?  1 : 0); // set bar for this xpos
+	}
 	++xpos;
 	used.push_back(*it);
       }
     }// end for
     DEBUG std::cerr << "finished line " << y << std::endl;
 
-    
-    // Fill in rest of line for this y-value
+    /* Fill remainder of row */
     for(; xpos <= xmax; ++xpos){
-      if(y == 0) out << X_AXIS_CHAR << " ";
+      if(y == 0) out << X_AXIS_CHAR << " "; // if at y = 0, draw x-axis
       else{
-	if(xpos%X_LABEL_DENSITY == 0 && !marked_last_row){
+	if(bar_graph  &&  print_bar[xpos] != 0){ // if this xpos has bar ON
+	  if( (y >= 0 && print_bar[xpos] == 1) ||
+	      (y <  0 && print_bar[xpos] == 2)   ){
+	    out << POINT_CHAR << " "; // print bar
+	  }
+	  else out << "  ";
+	}
+	else if(xpos%X_LABEL_DENSITY == 0 && !marked_last_row){
 	  out << GUIDELINE_CHAR << " "; // print x guideline
 	}
 	else out << "  ";
-      }
-    }
+      }// end else
+    }// end for
     marked_last_row = (marked_last_row + 1)%GUIDELINE_DENSITY;
     out << std::endl;
   }// end for
   /* Done plotting points */
 
   
-  /* Fill out any remaining rows of graph, even though no points fall on them */
+  /* Fill out any remaining rows of graph */
   for(; y >= ymin_rnd; y -= ystep){
     /* y-axis labelling */
     DEBUG std::cerr << "labelling ";
@@ -133,13 +204,19 @@ void asciigraph::operator()(std::ostream &out){
 
     
     for(int xpos = xmin; xpos <= xmax; ++xpos){
-      if(xpos%X_LABEL_DENSITY == 0 && !marked_last_row){
+      if(bar_graph  &&  print_bar[xpos] != 0){ // if this xpos has bar ON
+	if( (y >= 0 && print_bar[xpos] == 1) ||
+	    (y <  0 && print_bar[xpos] == 2)   ){
+	  out << POINT_CHAR << " "; // print bar
+	}
+	else out << "  ";
+      }
+      else if(xpos%X_LABEL_DENSITY == 0 && !marked_last_row){
 	out << GUIDELINE_CHAR << " "; // print x guideline
       }
       else if(y == 0) out << X_AXIS_CHAR << " ";
       else out << "  ";
     }
-    //    marked_last_row = !marked_last_row; // print x-markers every other row
     marked_last_row = (marked_last_row + 1)%GUIDELINE_DENSITY;
     out << std::endl;
     DEBUG std::cerr << "y = " << y << std::endl;

@@ -17,6 +17,7 @@
 #define GUIDELINE_DENSITY_DEFAULT 10
 #define X_AXIS_LABEL_DEFAULT      "x-axis"
 #define Y_AXIS_LABEL_DEFAULT      "y-axis"
+#define BAR_ZERO_POINT_DEFAULT    false
 
 
 /* Class asciigraph:
@@ -68,12 +69,13 @@ n    =====================
      int _ymax                                The upper bound of the y-axis
      int _ystep                               The step of the y-axis
      bool _debug             = false          Log debug info to stderr?
-     char _X_AXIS_CHAR       = '-',           Char to use for drawing x-axis
-     char _Y_AXIS_CHAR       = '|',           Char to use for drawing y-axis
-     char _GUIDELINE_CHAR    = '^',           Char to use for drawing guidelines
-     char _POINT_CHAR        = '@',           Char to use for drawing points
-     int  _X_LABEL_DENSITY   = 5              Interval at which to label x-axis
-     int  _GUIDELINE_DENSITY = 10             Interval to print guidelines
+     char _X_AXIS_CHAR       = ..._DEFAULT    Char to use for drawing x-axis
+     char _Y_AXIS_CHAR       = ..._DEFAULT    Char to use for drawing y-axis
+     char _GUIDELINE_CHAR    = ..._DEFAULT    Char to use for drawing guidelines
+     char _POINT_CHAR        = ..._DEFAULT    Char to use for drawing points
+     int  _X_LABEL_DENSITY   = ..._DEFAULT    Interval at which to label x-axis
+     int  _GUIDELINE_DENSITY = ..._DEFAULT    Interval to print guidelines
+     bool _BAR_ZERO_POINT    = ..._DEFAULT    Bar graphs: print points on zero?
   */
   asciigraph(const std::vector<std::pair<int, int>> Fx,
 	     const int _xmin, const int _xmax, const int _xstep,
@@ -86,7 +88,8 @@ n    =====================
 	     const int  _X_LABEL_DENSITY     = X_LABEL_DENSITY_DEFAULT,
 	     const int _GUIDELINE_DENSITY    = GUIDELINE_DENSITY_DEFAULT,
 	     const std::string _X_AXIS_LABEL = X_AXIS_LABEL_DEFAULT,
-	     const std::string _Y_AXIS_LABEL = Y_AXIS_LABEL_DEFAULT);
+	     const std::string _Y_AXIS_LABEL = Y_AXIS_LABEL_DEFAULT,
+	     const bool _BAR_ZERO_POINT      = BAR_ZERO_POINT_DEFAULT);
 
   
   /* addPoint():
@@ -139,7 +142,7 @@ n    =====================
      @return
      void 
   */
-  void operator()(std::ostream &out);
+  void operator()(std::ostream &out, const bool bar_graph = false);
   
 private:
   std::vector<std::pair<int, int>>
@@ -155,6 +158,7 @@ private:
   char X_AXIS_CHAR, Y_AXIS_CHAR, GUIDELINE_CHAR, POINT_CHAR;
   int X_LABEL_DENSITY, GUIDELINE_DENSITY;
   std::string X_AXIS_LABEL, Y_AXIS_LABEL;
+  bool BAR_ZERO_POINT;
 };
 
 /* Model asciigraph:

@@ -123,9 +123,10 @@ void streamGraph(std::istream &in, const bool debug){
   int ymin  = 0,  ymax  = 0;
   int xstep = 1,  ystep = 1;
   int hmax  = 0;
-  bool xmin_set = false,  xmax_set = false,
-       ymin_set = false,  ymax_set = false,
-       hmax_set = false;
+  bool xmin_set = false,  xmax_set  = false,
+       ymin_set = false,  ymax_set  = false,
+       hmax_set = false,  bar_graph = false,
+              BAR_ZERO_POINT    = BAR_ZERO_POINT_DEFAULT;
   char        X_AXIS_CHAR       = X_AXIS_CHAR_DEFAULT,
               Y_AXIS_CHAR       = Y_AXIS_CHAR_DEFAULT,
               GUIDELINE_CHAR    = GUIDELINE_CHAR_DEFAULT,
@@ -217,6 +218,16 @@ void streamGraph(std::istream &in, const bool debug){
 	DEBUG std::cerr << "Set Y_AXIS_LABEL to " << Y_AXIS_LABEL
 			<< std::endl;
       }
+      else if(line.compare(1, 3, "bar") == 0){
+	bar_graph = true;
+	DEBUG std::cerr << "Switching to bar graph mode."
+			<< std::endl;
+      }
+      else if(line.compare(1, 14, "BAR_ZERO_POINT") == 0){
+	BAR_ZERO_POINT = true;
+	DEBUG std::cerr << "Set BAR_ZERO_POINT to " << BAR_ZERO_POINT
+			<< std::endl;
+      }
       else{
 	DEBUG std::cerr << "Skipping invalid option: \"" << line
 			<< "\"" << std::endl;
@@ -230,66 +241,144 @@ void streamGraph(std::istream &in, const bool debug){
   }
   
   if(line == "" || !file_continues) return;
-  
-  // Determine type of data being input: (y) or (x, y)
+
   std::size_t pos = line.find(",");
   
-  if(pos != std::string::npos){  // (x, y) input
-    // Interpret "val1, val2" as point: (x, y)
-    for(int i = 0; line != "" && file_continues;
-	++i, file_continues = getline(in, line)){
-      // Check if comment
-      if (line.c_str()[0] == ';'){
-	DEBUG std::cerr << "skipping comment..." << std::endl;
-	continue;
-      }
-      // Parse line
-      pos = line.find(",");
-      DEBUG std::cerr << "parsing line {" << line << "}" << std::endl;
-      int x, y;
-      try{
-	x = std::stoi(line.substr(0, pos));
-	y = std::stoi(line.substr(pos + 1));
-      }catch(const std::invalid_argument &e){
-	throw invalid_data("invalid format");
-      }
-      DEBUG std::cerr << "into x=" << x << "\ty=" << y << std::endl;
-      
-      if(i == 0){
-	if(!xmin_set) xmin = x;
-	if(!xmax_set) xmax = x;
-	if(!ymin_set) ymin = y;
-	if(!ymax_set) ymax = y;
-      }
-      if(!xmin_set && x < xmin) xmin = x;
-      if(!xmax_set && x > xmax) xmax = x;
-      if(!ymin_set && y < ymin) ymin = y;
-      if(!ymax_set && y > ymax) ymax = y;
-      pts.push_back(std::pair<int, int>(x, y));
-      DEBUG std::cerr << "getting next line..." << std::endl;
-    }
-
-    // Ensure graph height <= hmax
-    if(hmax_set){
-      int minstep_fit = (ymax - ymin)/hmax + 1;
-      if(ystep < minstep_fit) ystep = minstep_fit;
-    }
+  // Check graph type
+  if(!bar_graph){
+    /************************/
+    /** Standard data plot **/
+    /************************/
     
-    std::cout << "\n\n";
+    // Which kind? Basic (y) or scatter (x, y)?
+    if(pos != std::string::npos){
+      /*******************/
+      /** scatter input **/
+      /*******************/
 
-    try{
-      asciigraph ag(pts, xmin, xmax, xstep, ymin, ymax, ystep,
-		    debug,
-		    X_AXIS_CHAR, Y_AXIS_CHAR, GUIDELINE_CHAR, POINT_CHAR,
-		    X_LABEL_DENSITY, GUIDELINE_DENSITY, X_AXIS_LABEL,
-		    Y_AXIS_LABEL);
-      ag(std::cout);
-    }catch(const std::logic_error &e){
-      throw invalid_data("invalid limit values");
+      DEBUG std::cerr << "parsing data as scatter input" << std::endl;
+      
+      // Interpret "val1, val2" as point: (x, y)
+      for(int i = 0; line != "" && file_continues;
+	  ++i, file_continues = getline(in, line)){
+	// Check if comment
+	if (line.c_str()[0] == ';'){
+	  DEBUG std::cerr << "skipping comment..." << std::endl;
+	  continue;
+	}
+	// Parse line
+	pos = line.find(",");
+	DEBUG std::cerr << "parsing line {" << line << "}" << std::endl;
+	int x, y;
+	try{
+	  x = std::stoi(line.substr(0, pos));
+	  y = std::stoi(line.substr(pos + 1));
+	}catch(const std::invalid_argument &e){
+	  throw invalid_data("invalid format");
+	}
+	DEBUG std::cerr << "into x=" << x << "\ty=" << y << std::endl;
+      
+	if(i == 0){
+	  if(!xmin_set) xmin = x;
+	  if(!xmax_set) xmax = x;
+	  if(!ymin_set) ymin = y;
+	  if(!ymax_set) ymax = y;
+	}
+	if(!xmin_set && x < xmin) xmin = x;
+	if(!xmax_set && x > xmax) xmax = x;
+	if(!ymin_set && y < ymin) ymin = y;
+	if(!ymax_set && y > ymax) ymax = y;
+	pts.push_back(std::pair<int, int>(x, y));
+	DEBUG std::cerr << "getting next line..." << std::endl;
+      }
+
+      // Ensure graph height <= hmax
+      if(hmax_set){
+	int minstep_fit = (ymax - ymin)/hmax + 1;
+	if(ystep < minstep_fit) ystep = minstep_fit;
+      }
+    
+      std::cout << "\n\n";
+
+      try{
+	asciigraph ag(pts, xmin, xmax, xstep, ymin, ymax, ystep,
+		      debug,
+		      X_AXIS_CHAR, Y_AXIS_CHAR, GUIDELINE_CHAR, POINT_CHAR,
+		      X_LABEL_DENSITY, GUIDELINE_DENSITY, X_AXIS_LABEL,
+		      Y_AXIS_LABEL);
+	ag(std::cout);
+      }catch(const std::logic_error &e){
+	throw invalid_data("invalid limit values");
+      }
+    }// end if(pos != std::string::npos)
+    else{
+      /*****************/
+      /** basic input **/
+      /*****************/
+
+      DEBUG std::cerr << "parsing data as basic input" << std::endl;
+
+      // Interpret "val1" as value to be graphed against integer counter from 0
+      int i = 0;
+      for(; line != "" && file_continues;
+	  ++i, file_continues = getline(in, line)){
+	// Check if comment
+	if (line.c_str()[0] == ';'){
+	  DEBUG std::cerr << "skipping comment..." << std::endl;
+	  continue;
+	}
+	// Parse line
+	int y;
+	try{
+	  y = std::stoi(line);
+	}catch(const std::invalid_argument &e){
+	  throw invalid_data("invalid format");
+	}
+      
+	if(i == 0){
+	  if(!ymin_set) ymin = y;
+	  if(!ymax_set) ymax = y;
+	}
+	if(!ymin_set && y < ymin) ymin = y;
+	if(!ymax_set && y > ymax) ymax = y;
+	DEBUG std::cerr << "parsing line {" << line << "}" << " into ("
+			<< i << ", " << y << ")" << std::endl;
+	pts.push_back(std::pair<int, int>(i, y));
+      }
+      DEBUG std::cerr << "min: " << ymin << ", max: " << ymax << std::endl;
+
+      // Ensure graph height <= hmax
+      if(hmax_set){
+	int minstep_fit = (ymax - ymin)/hmax + 1;
+	if(ystep < minstep_fit) ystep = minstep_fit;
+      }
+    
+      std::cout << "\n\n";
+
+      try{
+	if(!xmin_set) xmin = 0;
+	if(!xmax_set) xmax = i - 1;
+	asciigraph ag(pts, xmin, xmax, xstep, ymin, ymax, ystep,
+		      debug,
+		      X_AXIS_CHAR, Y_AXIS_CHAR, GUIDELINE_CHAR, POINT_CHAR,
+		      X_LABEL_DENSITY, GUIDELINE_DENSITY, X_AXIS_LABEL,
+		      Y_AXIS_LABEL);
+	ag(std::cout);
+      }catch(const std::logic_error &e){
+	throw invalid_data("invalid limit values");
+      }
     }
-  }
-  else{ // (y)
-    // Interpret "val1" as value to be graphed against integer counter from 0
+  }// end if(!bar_graph)
+  else{
+    /***************/
+    /** bar graph **/
+    /***************/
+
+    DEBUG std::cerr << "parsing data as bar graph" << std::endl;
+
+    X_AXIS_LABEL += "\n\n== LEGEND ==";
+
+    // lines in format "val, label"
     int i = 0;
     for(; line != "" && file_continues;
 	++i, file_continues = getline(in, line)){
@@ -299,12 +388,17 @@ void streamGraph(std::istream &in, const bool debug){
 	continue;
       }
       // Parse line
+      pos = line.find(",");
+      DEBUG std::cerr << "parsing line {" << line << "}" << std::endl;
       int y;
+      std::string label;
       try{
-	y = std::stoi(line);
+	y = std::stoi(line.substr(0, pos));
+	label = line.substr(pos + 1);
       }catch(const std::invalid_argument &e){
 	throw invalid_data("invalid format");
       }
+      DEBUG std::cerr << "into [" << label << ": " << y << "]" << std::endl;
       
       if(i == 0){
 	if(!ymin_set) ymin = y;
@@ -312,29 +406,36 @@ void streamGraph(std::istream &in, const bool debug){
       }
       if(!ymin_set && y < ymin) ymin = y;
       if(!ymax_set && y > ymax) ymax = y;
-      DEBUG std::cerr << "parsing line {" << line << "}" << " into ("
-		      << i << ", " << y << ")" << std::endl;
       pts.push_back(std::pair<int, int>(i, y));
+      X_AXIS_LABEL += "\n" + std::to_string(i) + " =" + label;
+      DEBUG std::cerr << "getting next line..." << std::endl;
     }
-    DEBUG std::cerr << "min: " << ymin << ", max: " << ymax << std::endl;
 
     // Ensure graph height <= hmax
     if(hmax_set){
       int minstep_fit = (ymax - ymin)/hmax + 1;
       if(ystep < minstep_fit) ystep = minstep_fit;
     }
-    
+
     std::cout << "\n\n";
 
     try{
+      // Set bar graph defaults (if not explicitly user-set)
+      if(X_LABEL_DENSITY == X_LABEL_DENSITY_DEFAULT){
+	X_LABEL_DENSITY = 1;
+      }
+      if(!ymin_set && ymin > 0){
+	ymin = 0;
+      }
       if(!xmin_set) xmin = 0;
-      if(!xmax_set) xmax = i;
+      if(!xmax_set) xmax = i - 1;
+	
       asciigraph ag(pts, xmin, xmax, xstep, ymin, ymax, ystep,
 		    debug,
 		    X_AXIS_CHAR, Y_AXIS_CHAR, GUIDELINE_CHAR, POINT_CHAR,
 		    X_LABEL_DENSITY, GUIDELINE_DENSITY, X_AXIS_LABEL,
-		    Y_AXIS_LABEL);
-      ag(std::cout);
+		    Y_AXIS_LABEL, BAR_ZERO_POINT);
+      ag(std::cout, true);
     }catch(const std::logic_error &e){
       throw invalid_data("invalid limit values");
     }
