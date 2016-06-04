@@ -322,3 +322,6 @@ so the vector would become
     [ ][x][x][x][x][ ][ ]
 vec[ 0  1  2  3  4  5  6 ]
 *** DONE Stop printing extra point at end
+*** TODO Allow user option for x-axis spacing!
+Ie, right now I have a single space between each x 'column' - make the number of spaces customizable
+> this would let users set X_LABEL_DENSITY to 1 and go above 10 items by just setting that option to 2 or 3 spaces.

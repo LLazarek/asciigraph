@@ -69,7 +69,7 @@ void asciigraph::operator()(std::ostream &out,
      The default must be to print the bar, until the point is reached, at which
      point the bar must stop.
   */
-  std::vector< int > print_bar(xmax, 0); // fill print_bar with 0s
+  std::vector< int > print_bar(xmax + 1, 0); // fill print_bar with 0s
   // Initialize any negative values print_bar values
   /* Iterate backwards (since graphpoints in descending order) to set all
      negative points in print_bar */

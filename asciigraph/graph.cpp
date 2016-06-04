@@ -295,7 +295,11 @@ void streamGraph(std::istream &in, const bool debug){
       // Ensure graph height <= hmax
       if(hmax_set){
 	int minstep_fit = (ymax - ymin)/hmax + 1;
-	if(ystep < minstep_fit) ystep = minstep_fit;
+	if(ystep < minstep_fit){
+	  DEBUG std::cerr << "Adjusting ystep to " << minstep_fit
+			  << " in order to satisfy hmax" << std::endl;
+	  ystep = minstep_fit;
+	}
       }
     
       std::cout << "\n\n";
@@ -350,7 +354,11 @@ void streamGraph(std::istream &in, const bool debug){
       // Ensure graph height <= hmax
       if(hmax_set){
 	int minstep_fit = (ymax - ymin)/hmax + 1;
-	if(ystep < minstep_fit) ystep = minstep_fit;
+	if(ystep < minstep_fit){
+	  DEBUG std::cerr << "Adjusting ystep to " << minstep_fit
+			  << " in order to satisfy hmax" << std::endl;
+	  ystep = minstep_fit;
+	}
       }
     
       std::cout << "\n\n";
@@ -414,7 +422,11 @@ void streamGraph(std::istream &in, const bool debug){
     // Ensure graph height <= hmax
     if(hmax_set){
       int minstep_fit = (ymax - ymin)/hmax + 1;
-      if(ystep < minstep_fit) ystep = minstep_fit;
+      if(ystep < minstep_fit){
+	DEBUG std::cerr << "Adjusting ystep to " << minstep_fit
+			<< " in order to satisfy hmax" << std::endl;
+	ystep = minstep_fit;
+      }
     }
 
     std::cout << "\n\n";
