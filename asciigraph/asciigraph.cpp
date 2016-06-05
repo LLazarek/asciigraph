@@ -16,6 +16,7 @@ asciigraph::asciigraph(const std::vector<std::pair<int, int>> Fx,
 		       const int  _GUIDELINE_DENSITY,   // = ..._DEFAULT
 		       const std::string _X_AXIS_LABEL, // = ..._DEFAULT
 		       const std::string _Y_AXIS_LABEL, // = ..._DEFAULT
+		       const int _WIDTH_PAD,            // = ..._DEFAULT
 		       const bool _BAR_ZERO_POINT       // = ..._DEFAULT
 		       )
   : ymin(_ymin), ymax(_ymax), ystep(_ystep),
@@ -29,6 +30,7 @@ asciigraph::asciigraph(const std::vector<std::pair<int, int>> Fx,
     GUIDELINE_DENSITY (_GUIDELINE_DENSITY),
     X_AXIS_LABEL      (_X_AXIS_LABEL),
     Y_AXIS_LABEL      (_Y_AXIS_LABEL),
+    WIDTH_PAD         (_WIDTH_PAD),
     BAR_ZERO_POINT    (_BAR_ZERO_POINT){
   /* Error checking */
   if(ymin >= ymax || ystep < 1 ||
@@ -127,19 +129,22 @@ void asciigraph::operator()(std::ostream &out,
 		      << it -> second << ")\n";
       // Print filler
       while(xpos < it -> second){
-	if(y == 0) out << X_AXIS_CHAR << " "; // if at y = 0, draw x-axis
+	if(y == 0){
+	  // if at y = 0, draw x-axis
+	  out << X_AXIS_CHAR << make_str(" ", WIDTH_PAD);
+	}
 	else{
 	  if(bar_graph  &&  print_bar[xpos] != 0){ // this xpos has bar ON
 	    if( (y >= 0 && print_bar[xpos] == 1) ||
 	        (y <  0 && print_bar[xpos] == 2)   ){
-	      out << POINT_CHAR << " "; // print bar
+	      out << POINT_CHAR << make_str(" ", WIDTH_PAD); // print bar
 	    }
-	    else out << "  ";
+	    else out << make_str(" ", 1 + WIDTH_PAD);
 	  }
 	  else if(xpos%X_LABEL_DENSITY == 0 && !marked_last_row){
-	    out << GUIDELINE_CHAR << " "; // print x guideline
+	    out << GUIDELINE_CHAR << make_str(" ", WIDTH_PAD); // x guideline
 	  }
-	  else out << "  ";
+	  else out << make_str(" ", 1 + WIDTH_PAD);
 	}
 	++xpos;
       }// end while
@@ -149,11 +154,12 @@ void asciigraph::operator()(std::ostream &out,
 	DEBUG std::cerr << "Printing point: (" << y << ", "
 			<< xpos << ")\n";
 	
-	if(!BAR_ZERO_POINT  &&  (bar_graph && y == 0)){ 
-	  out << X_AXIS_CHAR << " "; // don't print point on axis for bar graphs
+	if(!BAR_ZERO_POINT  &&  (bar_graph && y == 0)){
+	  // don't print point on axis for bar graphs
+	  out << X_AXIS_CHAR << make_str(" ", WIDTH_PAD);
 	}
 	else{
-	  out << POINT_CHAR << " "; // print point
+	  out << POINT_CHAR << make_str(" ", WIDTH_PAD); // print point
 	}
 	if(bar_graph){
 	  print_bar[xpos] = (y >= 0  ?  1 : 0); // set bar for this xpos
@@ -166,19 +172,22 @@ void asciigraph::operator()(std::ostream &out,
 
     /* Fill remainder of row */
     for(; xpos <= xmax; ++xpos){
-      if(y == 0) out << X_AXIS_CHAR << " "; // if at y = 0, draw x-axis
+      if(y == 0){
+	// if at y = 0, draw x-axis
+	out << X_AXIS_CHAR << make_str(" ", WIDTH_PAD);
+      }
       else{
 	if(bar_graph  &&  print_bar[xpos] != 0){ // if this xpos has bar ON
 	  if( (y >= 0 && print_bar[xpos] == 1) ||
 	      (y <  0 && print_bar[xpos] == 2)   ){
-	    out << POINT_CHAR << " "; // print bar
+	    out << POINT_CHAR << make_str(" ", WIDTH_PAD); // bar
 	  }
-	  else out << "  ";
+	  else out << make_str(" ", 1 + WIDTH_PAD);
 	}
 	else if(xpos%X_LABEL_DENSITY == 0 && !marked_last_row){
-	  out << GUIDELINE_CHAR << " "; // print x guideline
+	  out << GUIDELINE_CHAR << make_str(" ", WIDTH_PAD); // x guideline
 	}
-	else out << "  ";
+	else out << make_str(" ", 1 + WIDTH_PAD);
       }// end else
     }// end for
     marked_last_row = (marked_last_row + 1)%GUIDELINE_DENSITY;
@@ -192,10 +201,16 @@ void asciigraph::operator()(std::ostream &out,
     /* y-axis labelling */
     DEBUG std::cerr << "labelling ";
     // Label padding
-    if(y >= 0)
-      for(int i = ((y == 0) ? 1 : y)  ; i < 10000000  ; i *= 10) out << " ";
-    else
-      for(int i = -y; i < 1000000; i *= 10) out << " ";
+    if(y >= 0){
+      for(int i = ((y == 0) ? 1 : y)  ; i < 10000000  ; i *= 10){
+	out << " ";
+      }
+    }
+    else{
+      for(int i = -y; i < 1000000; i *= 10){
+	out << " ";
+      }
+    }
     out << y << " "; // y-axis label
     out << Y_AXIS_CHAR; // Y-axis line
 
@@ -204,18 +219,20 @@ void asciigraph::operator()(std::ostream &out,
 
     
     for(int xpos = xmin; xpos <= xmax; ++xpos){
-      if(bar_graph  &&  print_bar[xpos] != 0){ // if this xpos has bar ON
+      if(y == 0){
+	out << X_AXIS_CHAR << make_str(" ", WIDTH_PAD);
+      }
+      else if(bar_graph  &&  print_bar[xpos] != 0){ // if this xpos has bar ON
 	if( (y >= 0 && print_bar[xpos] == 1) ||
 	    (y <  0 && print_bar[xpos] == 2)   ){
-	  out << POINT_CHAR << " "; // print bar
+	  out << POINT_CHAR << make_str(" ", WIDTH_PAD); // bar
 	}
-	else out << "  ";
+	else out << make_str(" ", 1 + WIDTH_PAD);
       }
       else if(xpos%X_LABEL_DENSITY == 0 && !marked_last_row){
-	out << GUIDELINE_CHAR << " "; // print x guideline
+	out << GUIDELINE_CHAR << make_str(" ", WIDTH_PAD); // x guideline
       }
-      else if(y == 0) out << X_AXIS_CHAR << " ";
-      else out << "  ";
+      else out << make_str(" ", 1 + WIDTH_PAD);
     }
     marked_last_row = (marked_last_row + 1)%GUIDELINE_DENSITY;
     out << std::endl;
@@ -284,27 +301,52 @@ void asciigraph::label_x_axis(std::ostream &out){
   // Print bottom border
   out << "          ";
   for (int x = xmin; x <= xmax; ++x){
-    out << "--";
+    out << make_str("-", 1 + WIDTH_PAD);
   }
   // Print labels
   out << "\n          ";
   for(int x = xmin; x <= xmax; x += X_LABEL_DENSITY){
     if(0 <= x && x <= 9){ // 1 char label
       out << x;
-      for(int i = 1; i < X_LABEL_DENSITY*2; ++i) out << ' ';
+      for(int i = 1; i < X_LABEL_DENSITY*2; ++i){
+	out << " ";
+      }
+      out << make_str(" ", WIDTH_PAD - 1);
     }
     else if((10 <= x && x <= 99) || (-9 <= x && x <= -1)){ // 2 char
       out << x;
-      for(int i = 2; i < X_LABEL_DENSITY*2; ++i) out << ' ';
+      for(int i = 2; i < X_LABEL_DENSITY*2; ++i){
+	out << " ";
+      }
+      out << make_str(" ", WIDTH_PAD - 1);
     }
     else if((100 <= x && x <= 999) || (-99 <= x && x <= -10)){ // 3 char
       out << x;
-      for(int i = 3; i < X_LABEL_DENSITY*2; ++i) out << ' ';
+      for(int i = 3; i < X_LABEL_DENSITY*2; ++i){
+	out << " ";
+      }
+      out << make_str(" ", WIDTH_PAD - 1);
     }
     else if((1000 <= x && x <= 9999) || (-999 <= x && x <= -100)){ // 4 char
       out << x;
-      for(int i = 4; i < X_LABEL_DENSITY*2; ++i) out << ' ';
+      for(int i = 4; i < X_LABEL_DENSITY*2; ++i){
+	out << " ";
+      }
+      out << make_str(" ", WIDTH_PAD - 1);
     }
   }
   out << std::endl << "          " << X_AXIS_LABEL;
+}
+
+// Creates a string composed to n*str
+std::string make_str(std::string str, const int n,
+		     std::string separator /* = "" */){
+  if (n < 1){
+    return "";
+  }
+  std::string res = "";
+  for(int i = 1; i < n; ++i){
+    res += str + separator;
+  }
+  return res + str;
 }

@@ -132,7 +132,8 @@ void streamGraph(std::istream &in, const bool debug){
               GUIDELINE_CHAR    = GUIDELINE_CHAR_DEFAULT,
               POINT_CHAR        = POINT_CHAR_DEFAULT;
   int         X_LABEL_DENSITY   = X_LABEL_DENSITY_DEFAULT,
-              GUIDELINE_DENSITY = GUIDELINE_DENSITY_DEFAULT;
+              GUIDELINE_DENSITY = GUIDELINE_DENSITY_DEFAULT,
+              WIDTH_PAD         = WIDTH_PAD_DEFAULT;
   std::string X_AXIS_LABEL      = X_AXIS_LABEL_DEFAULT,
               Y_AXIS_LABEL      = Y_AXIS_LABEL_DEFAULT;
 
@@ -228,6 +229,11 @@ void streamGraph(std::istream &in, const bool debug){
 	DEBUG std::cerr << "Set BAR_ZERO_POINT to " << BAR_ZERO_POINT
 			<< std::endl;
       }
+      else if(line.compare(1, 9, "WIDTH_PAD") == 0){
+	WIDTH_PAD = std::stoi(line.substr(11));
+	DEBUG std::cerr << "Set WIDTH_PAD to " << WIDTH_PAD
+			<< std::endl;
+      }
       else{
 	DEBUG std::cerr << "Skipping invalid option: \"" << line
 			<< "\"" << std::endl;
@@ -309,7 +315,7 @@ void streamGraph(std::istream &in, const bool debug){
 		      debug,
 		      X_AXIS_CHAR, Y_AXIS_CHAR, GUIDELINE_CHAR, POINT_CHAR,
 		      X_LABEL_DENSITY, GUIDELINE_DENSITY, X_AXIS_LABEL,
-		      Y_AXIS_LABEL);
+		      Y_AXIS_LABEL, WIDTH_PAD);
 	ag(std::cout);
       }catch(const std::logic_error &e){
 	throw invalid_data("invalid limit values");
@@ -370,7 +376,7 @@ void streamGraph(std::istream &in, const bool debug){
 		      debug,
 		      X_AXIS_CHAR, Y_AXIS_CHAR, GUIDELINE_CHAR, POINT_CHAR,
 		      X_LABEL_DENSITY, GUIDELINE_DENSITY, X_AXIS_LABEL,
-		      Y_AXIS_LABEL);
+		      Y_AXIS_LABEL, WIDTH_PAD);
 	ag(std::cout);
       }catch(const std::logic_error &e){
 	throw invalid_data("invalid limit values");
@@ -446,7 +452,7 @@ void streamGraph(std::istream &in, const bool debug){
 		    debug,
 		    X_AXIS_CHAR, Y_AXIS_CHAR, GUIDELINE_CHAR, POINT_CHAR,
 		    X_LABEL_DENSITY, GUIDELINE_DENSITY, X_AXIS_LABEL,
-		    Y_AXIS_LABEL, BAR_ZERO_POINT);
+		    Y_AXIS_LABEL, WIDTH_PAD, BAR_ZERO_POINT);
       ag(std::cout, true);
     }catch(const std::logic_error &e){
       throw invalid_data("invalid limit values");

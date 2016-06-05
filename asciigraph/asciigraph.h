@@ -17,6 +17,7 @@
 #define GUIDELINE_DENSITY_DEFAULT 10
 #define X_AXIS_LABEL_DEFAULT      "x-axis"
 #define Y_AXIS_LABEL_DEFAULT      "y-axis"
+#define WIDTH_PAD_DEFAULT         1
 #define BAR_ZERO_POINT_DEFAULT    false
 
 
@@ -75,6 +76,7 @@ n    =====================
      char _POINT_CHAR        = ..._DEFAULT    Char to use for drawing points
      int  _X_LABEL_DENSITY   = ..._DEFAULT    Interval at which to label x-axis
      int  _GUIDELINE_DENSITY = ..._DEFAULT    Interval to print guidelines
+     int  _WIDTH_PAD         = ..._DEFAULT    Number of spaces between columns
      bool _BAR_ZERO_POINT    = ..._DEFAULT    Bar graphs: print points on zero?
   */
   asciigraph(const std::vector<std::pair<int, int>> Fx,
@@ -89,6 +91,7 @@ n    =====================
 	     const int _GUIDELINE_DENSITY    = GUIDELINE_DENSITY_DEFAULT,
 	     const std::string _X_AXIS_LABEL = X_AXIS_LABEL_DEFAULT,
 	     const std::string _Y_AXIS_LABEL = Y_AXIS_LABEL_DEFAULT,
+	     const int _WIDTH_PAD            = WIDTH_PAD_DEFAULT,
 	     const bool _BAR_ZERO_POINT      = BAR_ZERO_POINT_DEFAULT);
 
   
@@ -145,6 +148,11 @@ n    =====================
   void operator()(std::ostream &out, const bool bar_graph = false);
   
 private:
+  /* asciigraph::prepare_data():
+     Prepares asciigraph data for graphing by performing any necessary
+     rounding, transposing the data into (y, x) format, and finally ordering
+     the data into descending order.
+  */
   std::vector<std::pair<int, int>>
     prepare_data(const std::vector< std::pair<int, int> > &pts,
 		 int *_y, int *_ymin_rnd);
@@ -158,6 +166,7 @@ private:
   char X_AXIS_CHAR, Y_AXIS_CHAR, GUIDELINE_CHAR, POINT_CHAR;
   int X_LABEL_DENSITY, GUIDELINE_DENSITY;
   std::string X_AXIS_LABEL, Y_AXIS_LABEL;
+  int WIDTH_PAD;
   bool BAR_ZERO_POINT;
 };
 
@@ -197,6 +206,23 @@ struct descending_y_order {
     }
   }
 };
-  
+
+/* make_str():
+   Creates a string composed of n copies of str, optionally separated by
+   a separator string.
+
+   @throws
+   void
+   
+   @params
+   std::string str                   The string to be copied
+   int n                             The number of copies of str
+   std::string separator  = ""       A string separating each copy of str
+
+   @return
+   std::string                       The resulting string
+*/
+std::string make_str(std::string str, const int n,
+		       std::string separator = "");
 
 #endif
