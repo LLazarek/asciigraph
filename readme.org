@@ -1,17 +1,16 @@
-asciigraph
+#+TITLE: asciigraph readme
 
-* Summary/help
-asciigraph is a utility to
+* Summary
 asciigraph is a utility to produce simple graphs of arbitrary data in ascii. The format for running asciigraph is as follows:
 
-                    tasciigraph [-d] <-h | -s | -f </absolute/path/to/file> >
+:                    tasciigraph [-d] <-h | -s | -f </absolute/path/to/file> >
 
 The meaning of the switches are...
 
--d          Enable debug output logging to stderr. *NOTE* This will break graphs unless stderr is redirected elsewhere from the asciigraph's output.
--h          Display a help message.
--s          Pull graph data directly from stdin.
--f          Pull graph data from the specified file.
+- d          Enable debug output logging to stderr. *NOTE* This will break graphs unless stderr is redirected elsewhere from the asciigraph's output.
+- h          Display a help message.
+- s          Pull graph data directly from stdin.
+- f          Pull graph data from the specified file.
 
 
 * Options
@@ -49,6 +48,7 @@ Comments may be placed anywhere in the data by starting a line with ';': any lin
 *** Basic
 This format produces a basic graph of a given set of numbers. The input format is a list of single numbers, one per line. These numbers are treated as y-values and are plotted against their position in the list. Consider the following example:
 
+#+BEGIN_EXAMPLE
 data
 ====
 ; Example data of basic graphing mode
@@ -99,9 +99,12 @@ y-axis
           0         5
           x-axis
 
+#+END_EXAMPLE
+
 *** Scatter
 This format produces a scatter plot of the given list of points in the format "x, y". Consider the following example:
 
+#+BEGIN_EXAMPLE
 data
 ====
 ; Example data of scatter graphing mode
@@ -132,6 +135,8 @@ y-axis
           0         5         10        15
           x-axis
 
+#+END_EXAMPLE
+
 *** Options
 Options can be set at the start of data entry. The format for setting most options is as follows:
 
@@ -144,6 +149,7 @@ The only exception is boolean options (true/false) which are set to true as foll
 You can set as many options as you like, but all option settings must appear at the start of the file, before any data. Any invalid, mispelled, or otherwise unrecognized options will be ignored, so take care that they are correctly written. If you set an option and it does not seem to affect the graph, check the syntax first. If it still seems correct, run in debug mode to see if any options are marked as invalid.
 The data should follow immediately after the option settings. For example, consider the following example where the same data as was used in the [Basic] example is graphed but the ystep option is set to 2:
 
+#+BEGIN_EXAMPLE
 data
 ====
 ; Example data setting some options
@@ -185,6 +191,8 @@ foo bar
       0         5
      x-axis
 
+#+END_EXAMPLE
+
 *** Bar
 This format produces a bar graph of value-label pairs in the format "value, label".
 Because this format has a number of special considerations and different defaults from the two standard formats, this format must be enabled by setting the bar option. The following options have different default values for bar graphs (explicitly set options will still override these defaults):
@@ -198,6 +206,7 @@ Because this format has a number of special considerations and different default
 
 Consider the following example:
 
+#+BEGIN_EXAMPLE
 data
 ====
 ; Example data of bar graphing mode
@@ -236,12 +245,14 @@ y-axis
 3 = foo, bar
 4 = bar baz
 
+#+END_EXAMPLE
 
  * Note that data point "foo, bar" is zero and so does not create any bar. If this seems unclear and you want a point printed to show that "foo, bar" is zero, setting the option BAR_ZERO_POINT (as commented out in the example) will cause a point to be printed on the x-axis for any zero-value data points.
 
 *** A note on spacing
 The options X_LABEL_DENSITY and WIDTH_PAD have particular importance for the readability of graphs produced by asciigraph. On one hand, labelling every point along the x-axis (i.e: X_LABEL_DENSITY 1) can improve clarity, but on the other hand it can also make things cluttered. This is especially true when more than ten data points are plotted (or, if in scatter mode, the xmax - xmin >= 10), because if X_LABEL_DENSITY is set to 1 in these cases the two-digit labels end up with no spacing between them. For example:
 
+#+BEGIN_EXAMPLE
 data
 ====
 #X_LABEL_DENSITY 1
@@ -259,8 +270,11 @@ y-axis
           2 3 4 5 6 7 8 9 101112131415
           x-axis
 
+#+END_EXAMPLE
+
 Clearly this is undesirable. Should the labels become three or more digits, they would displace each other and not even line up correctly. There are two ways to avoid this: either increase the value of X_LABEL_DENSITY or of WIDTH_PAD. The effect of increasing X_LABEL_DENSITY should be obvious: since labels are printed less frequently, every label gets more "breathing room". Increasing WIDTH_PAD, on the other hand, solves this problem by increasing the horizontal spacing of the entire graph. The default value of WIDTH_PAD (1) means that, normally, there is one space of padding between each 'column' in the graph; increasing WIDTH_PAD correspondingly increases the number of spaces between columns (and the reverse is true: setting it to 0 removes the padding). For example:
 
+#+BEGIN_EXAMPLE
 data
 ====
 #X_LABEL_DENSITY 1
@@ -278,12 +292,14 @@ y-axis
           2  3  4  5  6  7  8  9  10 11 12 13 14 15
           x-axis
 
+#+END_EXAMPLE
+
 * Rounding
 When setting the ystep option to values other than 1, you may notice some distortion in the graph produced. This is not a bug; it is the result of rounding. Due to the discrete & finite nature of an ascii image, points must fall clearly into a single row and column on the graph. Values falling between two rows/columns cannot be represented. The immediate consequence of this is that When ystep is defined to be greater than 1, it becomes necessary to round y-values to the nearest multiple of ystep so that they will fit into a single row on the graph. This is done in two ways:
  - Points' y-values will be rounded to the nearest multiple of ystep.
-   This is done by standard rounding convention (1/2+ => 1)
-   e.g. if ystep = 10, the following y values would be rounded as shown:
-            0-4 ==> 0   |   5-9 == 10
+   - This is done by standard rounding convention (1/2+ => 1)
+   - e.g. if ystep = 10, the following y values would be rounded as shown:
+     : 0-4 ==> 0   |   5-9 == 10
  - Limits which are not multiples of ystep will be rounded to a multiple of ystep so as to expand the region of graphing. Thus:
    - lower limits are always rounded down
    - upper limits are always rounded up
@@ -292,78 +308,6 @@ When setting the ystep option to values other than 1, you may notice some distor
 asciigraph was written by Lukas Lazarek <lukasalazarek@gmail.com>
 
 * Coming features
-*** DONE Make exception throwing/handling better
-*** DONE Make other settings changeable in data file
-*** DONE Move code to git, update ~/batlog.sh
-*** DONE hmax option
 *** TODO x-axis scale specification
-*** DONE x-axis labelling of specific points and whole axis
-*** DONE y-axis labelling
-*** DONE Allow comments in data: lines starting with ";"
-*** DONE bar graphs
->>> Use a string replace function to replace occurrences of "\n" with a newline in X_AXIS_LABEL
-
-#+BEGIN_SRC c++
-  bool replace(std::string& str, const std::string& from, const std::string& to) {
-    size_t start_position = str.find(from);
-    if(start_position == std::string::npos)
-      return false;
-    str.replace(start_position, from.length(), to);
-    return true;
-  }
-
-  std::string string("hello $name");
-  replace(string, "$name", "Somename");
-#+END_SRC
-
-thus, to make a bar graph, one would just set X_LABEL_DENSITY to 1, and then use the X_AXIS_LABEL to write a legend along the lines of:
-1 = expenses
-2 = expenses:food
-3 = expenses:disc
-4 = expenses:misc
-...
-
-Alternatively, I could implement a bar graph option which takes data in the format:
-"""
-; [number] [description]
-22 expenses:disc
-15 expenses:food
-5 expenses:misc
-42 total expenses
-"""
-So it would just need to extract the number, then get the rest of the line as the label
-And then does exactly what I was saying above.
-
-> What if I keep a vector which just contains true/false for if the height of each x-point has been reached yet, and this is decided if an '@' is printed at that column for each row
-ie: if we have a graph like so:
-. |
-. |
-. |      @
-. |      @
-. |      @
-.9|      @
-.8|  @   @ @
-.7|  @   @ @
-.6|  @ @ @ @
-.5|  @ @ @ @
-.4|@ @ @ @ @
-.3|@ @ @ @ @
-.2|@ @ @ @ @ @
-.1|@ @ @ @ @ @ @
-. ---------------------------
-.  1 2 3 4 5 6 7
-
-And we're currently printing row 7, then our vector looks like ([X] = t, [ ] = f)
-    [ ][x][ ][x][x][ ][ ]
-vec[ 0  1  2  3  4  5  6 ]
-
-And then we get to row 6, we get the next point and if it starts on that row, we set vec[point.second()] = true
-so the vector would become
-    [ ][x][x][x][x][ ][ ]
-vec[ 0  1  2  3  4  5  6 ]
-*** DONE Stop printing extra point at end
-*** DONE Allow user option for x-axis spacing!
-Ie, right now I have a single space between each x 'column' - make the number of spaces customizable
-> this would let users set X_LABEL_DENSITY to 1 and go above 10 items by just setting that option to 2 or 3 spaces.
 *** TODO Allow negative x-points in scatter mode
->> also means I must print a y-axis on x=0
+>> must print a y-axis on x=0
