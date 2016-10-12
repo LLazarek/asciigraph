@@ -1,3 +1,9 @@
+/**************************************************/
+/* Author: Lukas Lazarek                          */
+/* Copyright (C) 2016 Lukas Lazarek               */
+/* Please see LICENSE.txt for full license info   */
+/**************************************************/
+
 #include <iostream>
 #include <fstream>
 #include <string>

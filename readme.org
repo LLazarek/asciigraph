@@ -1,4 +1,4 @@
-#+TITLE: asciigraph readme
+#+TITLE: ASCIIgraph readme
 
 * Summary
 asciigraph is a utility to produce simple graphs of arbitrary data in ascii. The format for running asciigraph is as follows:
@@ -311,3 +311,5 @@ asciigraph was written by Lukas Lazarek <lukasalazarek@gmail.com>
 *** TODO x-axis scale specification
 *** TODO Allow negative x-points in scatter mode
 >> must print a y-axis on x=0
+* Licensing etc
+ASCIIgraph is released in the hope that it will be useful and brings NO WARRANTY. It is licensed under the GPLv3, the full text of which is available in LICENSE.txt.
